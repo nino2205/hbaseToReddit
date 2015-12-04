@@ -14,7 +14,12 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20151123</version>
-		</dependency>
+		</dependency>	
+<dependency>
+	<groupId>org.apache.hbase</groupId>
+	<artifactId>hbase</artifactId>
+	<version>0.94.27</version>
+</dependency>
 
 	</dependencies>
 

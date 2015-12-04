@@ -49,8 +49,8 @@ public class RedditOAuth {
     public static final String OAUTH_TOKEN_URL = "https://ssl.reddit.com/api/v1/access_token";
 
     // I think it is easier to create 2 reddit apps (one with 127.0.0.1 redirect URI)
-    public static final String MY_APP_ID = "YOUR-APP-ID";
-    public static final String MY_APP_SECRET = "YOUR-APP-SECRET";
+    public static final String MY_APP_ID = "7Wg6jZ-0E8QOQQ";
+    public static final String MY_APP_SECRET = "e2D1s-mAIhUaZzIHt48WXSKPgJY";
 
     public static final String SCOPE_ID = "identity,read,report";
 
