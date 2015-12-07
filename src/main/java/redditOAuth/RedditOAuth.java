@@ -36,7 +36,7 @@ import com.google.api.client.http.UrlEncodedContent;
 
 public class RedditOAuth {
 
-     public static final String OAUTH_API_DOMAIN = "https://oauth.reddit.com";
+    public static final String OAUTH_API_DOMAIN = "https://oauth.reddit.com";
 
     // Step 1. Send user to auth URL
     public static final String OAUTH_AUTH_URL = "https://ssl.reddit.com/api/v1/authorize";
@@ -102,7 +102,7 @@ public class RedditOAuth {
 
                 // Parse with org.json
                 JSONTokener tokener = null;
-                tokener = new JSONTokener( json );
+                tokener = new JSONTokener(json);
                 jo = new JSONObject(tokener);
 
                 // Sample response:
@@ -112,7 +112,7 @@ public class RedditOAuth {
                 // "refresh_token": "vzZ0PP0A4k-twzSuVyvRN7uH2JY",
                 // "scope": "identity"}
             } else
-                logger.log(Level.WARNING , "Request failed with " + response.getStatusCode());
+                logger.log(Level.WARNING, "Request failed with " + response.getStatusCode());
         } finally {
             response.disconnect();
         }
@@ -126,21 +126,21 @@ public class RedditOAuth {
 
 
     // A generic get fn to build the rest of my API calls around
-    public static JSONObject getObject( final String surl, final String token ) throws IOException {
+    public static JSONObject getObject(final String surl, final String token) throws IOException {
         logger.log(Level.INFO, "get for URL=" + surl);
 
-        GenericUrl url = new GenericUrl( surl );
+        GenericUrl url = new GenericUrl(surl);
 
         HttpRequestFactory requestFactory = HTTP_TRANSPORT
                 .createRequestFactory(new HttpRequestInitializer() {
                     @Override
                     public void initialize(HttpRequest request) {
                         // request.setParser( new JsonObjectParser(JSON_FACTORY) );
-                        request.getHeaders().setAuthorization( "bearer " + token );
+                        request.getHeaders().setAuthorization("bearer " + token);
                     }
                 });
 
-        HttpRequest request = requestFactory.buildGetRequest( url );
+        HttpRequest request = requestFactory.buildGetRequest(url);
         HttpResponse response = request.execute();
 
         JSONObject jo = null;
@@ -154,7 +154,7 @@ public class RedditOAuth {
 
                 // Parse with org.json
                 JSONTokener tokener = null;
-                tokener = new JSONTokener( json );
+                tokener = new JSONTokener(json);
                 jo = new JSONObject(tokener);
 
                 // Or Parse directly into Java objects using Jackson
@@ -168,21 +168,21 @@ public class RedditOAuth {
         return jo;
     }
 
-    public static JSONArray getArray( final String surl, final String token ) throws IOException {
+    public static JSONArray getArray(final String surl, final String token) throws IOException {
         logger.log(Level.INFO, "get for URL=" + surl);
 
-        GenericUrl url = new GenericUrl( surl );
+        GenericUrl url = new GenericUrl(surl);
 
         HttpRequestFactory requestFactory = HTTP_TRANSPORT
                 .createRequestFactory(new HttpRequestInitializer() {
                     @Override
                     public void initialize(HttpRequest request) {
                         // request.setParser( new JsonObjectParser(JSON_FACTORY) );
-                        request.getHeaders().setAuthorization( "bearer " + token );
+                        request.getHeaders().setAuthorization("bearer " + token);
                     }
                 });
 
-        HttpRequest request = requestFactory.buildGetRequest( url );
+        HttpRequest request = requestFactory.buildGetRequest(url);
         HttpResponse response = request.execute();
 
         JSONArray ja = null;
@@ -196,7 +196,7 @@ public class RedditOAuth {
 
                 // Parse with org.json
                 JSONTokener tokener = null;
-                tokener = new JSONTokener( json );
+                tokener = new JSONTokener(json);
                 ja = new JSONArray(tokener);
             } else
                 logger.log(Level.WARNING, "Request failed with " + response.getStatusCode());
