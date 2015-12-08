@@ -1,6 +1,5 @@
 package redditOAuth;
 
-import org.jruby.RubyProcess;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
