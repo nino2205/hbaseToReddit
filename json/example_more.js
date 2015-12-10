@@ -1,6 +1,5 @@
 {
-    "data":
-    {
+    "data": {
         "id": "cxta6f5",
         "count": 0,
         "name": "t1_cxta6f5",
