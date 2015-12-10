@@ -2,36 +2,40 @@ package de.hsh.inform.dbparadigm.hbase.service;
 
 import com.google.protobuf.ServiceException;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.Cell;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.IOException;
 
-public class HBaseConnection{
-    public HBaseConnection(String hbaseZookeeperQuorum, String hbaseZookeeperPropertyClientPort, String hbaseMaster) throws IOException {
-        Configuration config = HBaseConfiguration.create();
+public class HBaseConnection {
+    private Configuration configuration;
+    private Connection connection;
 
-        config.clear();
-        config.set("hbase.zookeeper.quorum", hbaseZookeeperQuorum);
-        config.set("hbase.zookeeper.property.clientPort",hbaseZookeeperPropertyClientPort);
-        config.set("hbase.master", hbaseMaster);
+    public HBaseConnection() throws IOException {
+        System.out.println("Trying to connect...");
 
-        try {
-            HBaseAdmin.checkHBaseAvailable(config);
-        } catch (ServiceException e) {
-            System.out.println("hbase not available");
-            e.printStackTrace();
-        }
+        configuration = HBaseConfiguration.create();
+        configuration.set("hbase.zookeeper.property.clientPort", "2181");
+        configuration.set("hbase.zookeeper.quorum", "hortonworks.hbase.vm");
+        configuration.set("zookeeper.znode.parent", "/hbase-unsecure");
 
-        Connection connection = ConnectionFactory.createConnection(config);
+        System.out.println("HBase is running!");
 
-        Table table = connection.getTable(TableName.valueOf("test"));
+        connection = ConnectionFactory.createConnection(configuration);
 
+        Table table = connection.getTable(TableName.valueOf("myLittleHBaseTable"));
         Put p = new Put(Bytes.toBytes("myLittleRow"));
-
         p.add(Bytes.toBytes("myLittleFamily"), Bytes.toBytes("someQualifier"), Bytes.toBytes("Some Value"));
+        table.put(p);
+
+        Get g = new Get(Bytes.toBytes("myLittleRow"));
+        Result r = table.get(g);
+        byte [] value = r.getValue(Bytes.toBytes("myLittleFamily"), Bytes.toBytes("someQualifier"));
+
+        // If we convert the value bytes, we should get back 'Some Value', the
+        // value we inserted at this location.
+        String valueStr = Bytes.toString(value);
+        System.out.println("GET: " + valueStr);
     }
 }
