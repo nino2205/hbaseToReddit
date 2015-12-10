@@ -3,6 +3,9 @@ package de.hsh.inform.dbparadigm.hbase.main;
 import de.hsh.inform.dbparadigm.hbase.service.HBaseConnection;
 import de.hsh.inform.dbparadigm.hbase.service.RedditReader;
 import de.hsh.inform.dbparadigm.hbase.service.query.*;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.HTable;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -26,21 +29,14 @@ public class RunHBaseQueries {
             System.exit(-1);
         }
 
-        /*
         try {
-            HBaseConnection connection = new HBaseConnection(
-                    config.getProperty("hbase.zookeeper.quorum"),
-                    config.getProperty("hbase.zookeeper.property.clientPort"),
-                    config.getProperty("hbase.master")
-            );
+            HBaseConnection connection = new HBaseConnection();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        */
-
 
         RedditReader reader = new RedditReader(config.getProperty("subreddit"));
-        reader.start();
+        //reader.start();
 
 
         ArrayList<IQuery> queries = new ArrayList<>();
