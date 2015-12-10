@@ -77,13 +77,6 @@ public class RedditOAuth {
                 JSONTokener tokener = null;
                 tokener = new JSONTokener(json);
                 jo = new JSONObject(tokener);
-
-                // Sample response:
-                // {"access_token": "cdkVPfKww5R0D1v-MJAD89Y19QM",
-                // "token_type": "bearer",
-                // "expires_in": 3600,
-                // "refresh_token": "vzZ0PP0A4k-twzSuVyvRN7uH2JY",
-                // "scope": "identity"}
             } else
                 logger.log(Level.WARNING, "Request failed with " + response.getStatusCode());
         } finally {

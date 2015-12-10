@@ -26,6 +26,7 @@ public class RunHBaseQueries {
             System.exit(-1);
         }
 
+        /*
         try {
             HBaseConnection connection = new HBaseConnection(
                     config.getProperty("hbase.zookeeper.quorum"),
@@ -35,6 +36,7 @@ public class RunHBaseQueries {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
 
 
         RedditReader reader = new RedditReader(config.getProperty("subreddit"));

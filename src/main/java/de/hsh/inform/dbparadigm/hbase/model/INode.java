@@ -7,6 +7,10 @@ public interface INode {
 	public void setIdentifierString(String id);
 	public List<IEdge> getIncomingEdges();
 	public void setIncomingEdges(List<IEdge> edges);
+	public void addIncomingEdges(IEdge edge);
 	public List<IEdge> getOutgoingEdges();
 	public void setOutgoingEdges(List<IEdge> edges);
+	public void addOutgoingEdges(IEdge edge);
+	public Long getLastActivity();
+	public void setLastActivity(Long lastActivity);
 }

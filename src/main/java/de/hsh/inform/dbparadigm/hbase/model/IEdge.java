@@ -12,4 +12,12 @@ public interface IEdge {
 	public INode getDestination();
 
 	public void setDestination(INode node);
+
+	public Long getCreated();
+
+	public void setCreated(Long created);
+
+	public void setTitle(String title);
+
+	public String getTitle();
 }
