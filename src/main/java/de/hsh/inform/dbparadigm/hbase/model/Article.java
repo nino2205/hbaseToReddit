@@ -3,7 +3,7 @@ package de.hsh.inform.dbparadigm.hbase.model;
 /**
  * Created by Sören on 08.12.2015.
  */
-public class Post implements IEdge {
+public class Article implements IEdge {
     @Override
     public String getIdentifierString() {
         return null;
