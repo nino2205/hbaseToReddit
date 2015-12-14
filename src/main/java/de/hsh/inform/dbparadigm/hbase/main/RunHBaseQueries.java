@@ -23,7 +23,7 @@ public class RunHBaseQueries {
     public static void main(String[] args) {
         Properties config = null;
         try {
-            config = RunHBaseQueries.readConfigFile("config.properties");
+            config = RunHBaseQueries.readConfigFile("properties/config.properties");
         } catch (IOException e) {
             logger.log(Level.WARNING, "error by reading properties file");
             System.exit(-1);
