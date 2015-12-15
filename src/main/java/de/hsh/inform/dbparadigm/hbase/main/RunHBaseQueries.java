@@ -1,18 +1,15 @@
 package de.hsh.inform.dbparadigm.hbase.main;
 
+import de.hsh.inform.dbparadigm.hbase.model.IEdge;
 import de.hsh.inform.dbparadigm.hbase.service.HBaseConnection;
+import de.hsh.inform.dbparadigm.hbase.service.HBasePool;
 import de.hsh.inform.dbparadigm.hbase.service.RedditReader;
 import de.hsh.inform.dbparadigm.hbase.service.query.*;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.client.HTable;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Properties;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,6 +19,8 @@ public class RunHBaseQueries {
 
     public static void main(String[] args) {
         Properties config = null;
+        HBaseConnection connection = null;
+
         try {
             config = RunHBaseQueries.readConfigFile("properties/config.properties");
         } catch (IOException e) {
@@ -30,13 +29,27 @@ public class RunHBaseQueries {
         }
 
         try {
-            HBaseConnection connection = new HBaseConnection();
+            connection = HBaseConnection.getInstance();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "no connection to hbase");
+            System.exit(-1);
         }
 
         RedditReader reader = new RedditReader(config.getProperty("subreddit"));
-        //reader.start();
+        HashMap<String, IEdge> edges = reader.run();
+
+        Iterator iterator = edges.entrySet().iterator();
+        HBasePool hBasePool = new HBasePool(connection.getConnection());
+
+        IEdge edge = null;
+        while ( iterator.hasNext() ){
+            try {
+                edge = (IEdge) iterator.next();
+                hBasePool.save(edge);
+            } catch (IOException e) {
+                logger.log(Level.WARNING, edge.toString());
+            }
+        }
 
 
         ArrayList<IQuery> queries = new ArrayList<>();
