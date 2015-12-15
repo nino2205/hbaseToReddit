@@ -1,6 +1,10 @@
 package de.hsh.inform.dbparadigm.hbase.main;
 
+import de.hsh.inform.dbparadigm.hbase.model.Author;
+import de.hsh.inform.dbparadigm.hbase.model.Comment;
+import de.hsh.inform.dbparadigm.hbase.model.IEdge;
 import de.hsh.inform.dbparadigm.hbase.service.HBaseConnection;
+import de.hsh.inform.dbparadigm.hbase.service.HBasePool;
 import de.hsh.inform.dbparadigm.hbase.service.RedditReader;
 import de.hsh.inform.dbparadigm.hbase.service.query.*;
 import org.apache.hadoop.conf.Configuration;
@@ -10,10 +14,7 @@ import org.apache.hadoop.hbase.client.HTable;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Properties;
-import java.util.Scanner;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,7 +23,7 @@ public class RunHBaseQueries {
     private static Logger logger = Logger.getGlobal();
 
     public static void main(String[] args) {
-        HBaseConnection connection;
+        HBaseConnection connection = null;
         try {
             connection = HBaseConnection.getInstance();
         } catch (IOException e) {
@@ -41,7 +42,13 @@ public class RunHBaseQueries {
                 case "get":
                     if( command.length == 2 ){
                         RedditReader reader = new RedditReader(command[1]);
-                        reader.run();
+                        List<IEdge> list = new ArrayList<IEdge>(reader.run().values());
+                        HBasePool pool = new HBasePool(connection.getConnection());
+                        try {
+                            pool.save(list);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     } else {System.out.println("we need a subreddit");}
                     break;
                 case "bridge":
