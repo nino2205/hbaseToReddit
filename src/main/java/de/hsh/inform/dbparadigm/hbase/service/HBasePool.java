@@ -25,11 +25,19 @@ public class HBasePool {
 		getCommentTable().put(createEdgePut(edge));
 	}
 
-	public void save(INode node){
-
+	public void save(INode node) throws IOException{
+		getAuthorTable().put(createNodePut(node));
 	}
 
-	public void save(List<IEdge> edges) throws IOException{
+	public void saveNodes(List<INode> nodes) throws IOException{
+		ArrayList<Put> puts = new ArrayList<>();
+		for (INode n:nodes) {
+			puts.add(createNodePut(n));
+		}
+		getAuthorTable().put(puts);
+	}
+
+	public void saveEdges(List<IEdge> edges) throws IOException{
 		ArrayList<Put> puts = new ArrayList<>();
 		for (IEdge e:edges) {
 			puts.add(createEdgePut(e));
@@ -47,7 +55,13 @@ public class HBasePool {
 
 	private Put createEdgePut(IEdge edge){
 		Put p = new Put(Bytes.toBytes(edge.getSource().getIdentifierString() + "|" + edge.getDestination().getIdentifierString()));
-		p.addColumn(Bytes.toBytes("properties"), Bytes.toBytes(edge.getIdentifierString()), edge.getCreated(), Bytes.toBytes(edge.getTitle()));
+		p.addColumn(Bytes.toBytes("properties"), Bytes.toBytes("title"), edge.getCreated(), Bytes.toBytes(edge.getTitle()));
+		return p;
+	}
+
+	private Put createNodePut(INode node){
+		Put p = new Put(Bytes.toBytes(node.getIdentifierString()));
+		p.addColumn(Bytes.toBytes("properties"), Bytes.toBytes("userid"), node.getLastActivity(), Bytes.toBytes(node.getIdentifierString()));
 		return p;
 	}
 
@@ -59,10 +73,10 @@ public class HBasePool {
 	}
 
 	private Table getAuthorTable() throws IOException{
-		if( commentTable == null ){
-			commentTable = connection.getTable(TableName.valueOf("author"));
+		if( authorTable == null ){
+			authorTable = connection.getTable(TableName.valueOf("author"));
 		}
-		return commentTable;
+		return authorTable;
 	}
 
 }

@@ -3,6 +3,7 @@ package de.hsh.inform.dbparadigm.hbase.main;
 import de.hsh.inform.dbparadigm.hbase.model.Author;
 import de.hsh.inform.dbparadigm.hbase.model.Comment;
 import de.hsh.inform.dbparadigm.hbase.model.IEdge;
+import de.hsh.inform.dbparadigm.hbase.model.INode;
 import de.hsh.inform.dbparadigm.hbase.service.HBaseConnection;
 import de.hsh.inform.dbparadigm.hbase.service.HBasePool;
 import de.hsh.inform.dbparadigm.hbase.service.RedditReader;
@@ -42,10 +43,13 @@ public class RunHBaseQueries {
                 case "get":
                     if( command.length == 2 ){
                         RedditReader reader = new RedditReader(command[1]);
-                        List<IEdge> list = new ArrayList<IEdge>(reader.run().values());
+                        reader.run();
+                        List<IEdge> edges = new ArrayList<IEdge>(reader.edge.values());
+                        List<INode> nodes = new ArrayList<INode>(reader.nodes.values());
                         HBasePool pool = new HBasePool(connection.getConnection());
                         try {
-                            pool.save(list);
+                            pool.saveEdges(edges);
+                            pool.saveNodes(nodes);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

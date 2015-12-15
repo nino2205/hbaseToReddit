@@ -14,8 +14,8 @@ import java.util.Queue;
 
 public class RedditReader{
 
-    private HashMap<String, INode> nodes = new HashMap<>();
-    private HashMap<String, IEdge> edge = new HashMap<>();
+    public HashMap<String, INode> nodes = new HashMap<>();
+    public HashMap<String, IEdge> edge = new HashMap<>();
     private HashMap<String, INode> article2author = new HashMap<>();
 
     /**
@@ -38,7 +38,7 @@ public class RedditReader{
         this.restRequestPath = restRequestPath;
     }
 
-    public HashMap<String, IEdge> run() {
+    public void run() {
         try {
             String curCode = new Long(System.currentTimeMillis()).toString();
             int round = 0;
@@ -112,7 +112,6 @@ public class RedditReader{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return edge;
     }
 
     private void readReplies(INode parent, Iterator<Object> comIt) {
