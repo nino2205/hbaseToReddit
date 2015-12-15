@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,24 +22,66 @@ public class RunHBaseQueries {
     private static Logger logger = Logger.getGlobal();
 
     public static void main(String[] args) {
-        Properties config = null;
-        try {
-            config = RunHBaseQueries.readConfigFile("properties/config.properties");
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "error by reading properties file");
-            System.exit(-1);
-        }
-
         try {
             HBaseConnection connection = new HBaseConnection();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "error by open connection to hbase");
+            System.exit(-1);
         }
 
-        RedditReader reader = new RedditReader(config.getProperty("subreddit"));
-        //reader.start();
+        String[] command = null;
+        menu();
+        do {
+            System.out.print("> ");
+            Scanner scanner = new Scanner(System.in);
+            command = scanner.nextLine().toLowerCase().trim().split(" ");
 
+            switch (command[0]){
+                case "get":
+                    if( command.length == 2 ){
+                        RedditReader reader = new RedditReader(command[1]);
+                        reader.start();
+                    } else {System.out.println("we need a subreddit");}
+                    break;
+                case "bridge":
+                    System.out.println("computing bridge");
+                    break;
+                case "degree":
+                    if( command.length == 2 ){
+                        System.out.println("computing degree");
+                    } else {System.out.println("we need a nodeID");}
+                    break;
+                case "maxdegree":
+                    System.out.println("computing maxdegree");
+                    break;
+                case "foaf":
+                    if( command.length == 2 ){
+                        System.out.println("computing friends of a friend");
+                    } else {System.out.println("we need a nodeID");}
+                    break;
+                case "exit":
+                    break;
+                default:
+                    menu();
+            }
+        } while( !command[0].equals("exit") );
 
+    }
+
+    private static void menu(){
+        System.out.println("Welcome to Reddit2Hbase");
+        System.out.println("-----------------------");
+        System.out.println("get <subreddit>         - get the subreddit and added to hbase");
+        System.out.println("bridge                  - bridge with tarjan's algorithm");
+        System.out.println("degree <NodeID>         - DegreeCentrality");
+        System.out.println("maxdegree               - MaxDegree");
+        System.out.println("foaf <NodeID>           - Friends of a Friend");
+        System.out.println("");
+        System.out.println("exit");
+        System.out.println("-----------------------");
+    }
+
+    private static void start(){
         ArrayList<IQuery> queries = new ArrayList<>();
         queries.add(new DegreeCentrality());
         queries.add(new MaxDegree());
@@ -52,13 +95,4 @@ public class RunHBaseQueries {
             System.out.println(query.getName() + " in " + (new Date().getTime()-start) + " ms");
         }
     }
-
-    public static Properties readConfigFile(String filename) throws IOException {
-        Properties properties = new Properties();
-        BufferedInputStream stream = new BufferedInputStream(new FileInputStream(filename));
-        properties.load(stream);
-        stream.close();
-        return properties;
-    }
-
 }
