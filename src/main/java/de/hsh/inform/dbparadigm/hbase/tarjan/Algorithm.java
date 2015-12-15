@@ -9,13 +9,13 @@ import de.hsh.inform.dbparadigm.hbase.model.IEdge;
 
 public class Algorithm {
 
-	// The input INodes get transformed to TarjanNodes to store an index an a link.
+	// The nodes to traverse.
 	private final List<TarjanNode> nodes;
 	
 	// Ordered Set of visited nodes.
 	private final Stack<TarjanNode> stack;
 	
-	// The generated result is a Set of Components. A Component is a Set of TarjanNodes.
+	// The strongly connected components (SCC).
 	private Collection<Collection<TarjanNode>> components;
 	
 	// Used to assign unique incremental indicies. 
@@ -30,8 +30,7 @@ public class Algorithm {
 	
 	/**
 	 * Traverses all unvisited TajanNodes and returns the strong 
-	 * components in of this.nodes as a Collection of TarjanNode
-	 * Collections.
+	 * components of this.nodes as a Collection of TarjanNode Collections.
 	 */
 	public Collection<Collection<TarjanNode>> execute () {
 		int size = this.nodes.size();
@@ -46,7 +45,8 @@ public class Algorithm {
 	}
 	
 	/**
-	 * Visits the TarjanNode node and it's unvisited neighbours
+	 * Visits the TarjanNode node and it's unvisited neighbors. If the
+	 * node's link equals it's index, a SCC is found.
 	 */
 	private void visit (TarjanNode node) {
 		node.setLink(pointer);
@@ -70,8 +70,8 @@ public class Algorithm {
 	
 	
 	/**
-	 * Creates a Component (Vector) from all INodes of the TarjanNodes
-	 * on the stack until the TarjanNode node is reached.
+	 * Creates a Component (Vector) from all TarjanNodes on the stack 
+	 * until the TarjanNode node is reached (inclusively).
 	 */
 	private Vector<TarjanNode> createComponent (TarjanNode node) {
 		Vector<TarjanNode> component = new Vector<TarjanNode>();
@@ -86,6 +86,7 @@ public class Algorithm {
 	
 	/**
 	 * Returns all neighbors of the INode in the tNode TarjanNode.
+	 * TODO: Remove casting in the future.
 	 */
 	private Vector<TarjanNode> getNeighbours (TarjanNode node) {
 		Vector<TarjanNode> neighbors = new Vector<>();
