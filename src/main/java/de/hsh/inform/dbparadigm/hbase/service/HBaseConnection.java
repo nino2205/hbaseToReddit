@@ -4,15 +4,22 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.*;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.io.compress.Compression;
-import org.apache.hadoop.hbase.util.Bytes;
 
 import java.io.IOException;
 
 public class HBaseConnection {
+    private static HBaseConnection instance = null;
     private Configuration config;
     private Connection connection;
 
-    public HBaseConnection() throws IOException {
+    public static HBaseConnection getInstance() throws IOException {
+        if(instance == null){
+            instance = new HBaseConnection();
+        }
+        return instance;
+    }
+
+    protected HBaseConnection() throws IOException {
         System.out.println("Trying to connect...");
 
         config = HBaseConfiguration.create();
@@ -21,7 +28,9 @@ public class HBaseConnection {
 
         connection = ConnectionFactory.createConnection(config);
 
-        createTable(connection);
+        if( true ) { // TODO: in der Config eintragen ob erstellt werden soll oder nicht | im menue eine Option machen
+            createTables(connection);
+        }
 
         /*
         Table table = connection.getTable(TableName.valueOf("myLittleHBaseTable"));
@@ -42,13 +51,26 @@ public class HBaseConnection {
         */
     }
 
-    private void createTable(Connection connection) throws IOException{
+    public Connection getConnection(){
+        return connection;
+    }
+
+    private void createTables(Connection connection) throws IOException {
         Admin admin = connection.getAdmin();
-        System.out.println(admin);
-        HTableDescriptor tableDescriptor = new HTableDescriptor(new HTableDescriptor(TableName.valueOf("test_table")));
-        tableDescriptor.addFamily(new HColumnDescriptor("test_column_family").setCompressionType(Compression.Algorithm.SNAPPY));
-        System.out.println("Creating table");
-        createOrOverwrite(admin,tableDescriptor);
+
+        HTableDescriptor tableDescriptor = null;
+
+        tableDescriptor = new HTableDescriptor(new HTableDescriptor(TableName.valueOf("comment")));
+        tableDescriptor.addFamily(new HColumnDescriptor("properties").setCompressionType(Compression.Algorithm.SNAPPY));
+        createOrOverwrite(admin, tableDescriptor);
+
+        tableDescriptor = new HTableDescriptor(new HTableDescriptor(TableName.valueOf("author")));
+        tableDescriptor.addFamily(new HColumnDescriptor("properties").setCompressionType(Compression.Algorithm.SNAPPY));
+        createOrOverwrite(admin, tableDescriptor);
+
+        tableDescriptor = new HTableDescriptor(new HTableDescriptor(TableName.valueOf("subreddit")));
+        tableDescriptor.addFamily(new HColumnDescriptor("author").setCompressionType(Compression.Algorithm.SNAPPY));
+        createOrOverwrite(admin, tableDescriptor);
     }
 
     private void createOrOverwrite(Admin admin, HTableDescriptor table) throws IOException {
