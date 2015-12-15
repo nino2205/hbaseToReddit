@@ -22,8 +22,9 @@ public class RunHBaseQueries {
     private static Logger logger = Logger.getGlobal();
 
     public static void main(String[] args) {
+        HBaseConnection connection;
         try {
-            HBaseConnection connection = new HBaseConnection();
+            connection = HBaseConnection.getInstance();
         } catch (IOException e) {
             logger.log(Level.WARNING, "error by open connection to hbase");
             System.exit(-1);
@@ -40,7 +41,7 @@ public class RunHBaseQueries {
                 case "get":
                     if( command.length == 2 ){
                         RedditReader reader = new RedditReader(command[1]);
-                        reader.start();
+                        reader.run();
                     } else {System.out.println("we need a subreddit");}
                     break;
                 case "bridge":
@@ -94,14 +95,6 @@ public class RunHBaseQueries {
             query.run();
             System.out.println(query.getName() + " in " + (new Date().getTime()-start) + " ms");
         }
-    }
-
-    public static Properties readConfigFile(String filename) throws IOException {
-        Properties properties = new Properties();
-        BufferedInputStream stream = new BufferedInputStream(new FileInputStream(filename));
-        properties.load(stream);
-        stream.close();
-        return properties;
     }
 
 }
