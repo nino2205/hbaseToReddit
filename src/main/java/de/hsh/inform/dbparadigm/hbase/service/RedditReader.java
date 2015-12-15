@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Queue;
 
-public class RedditReader extends Thread {
+public class RedditReader{
 
     private HashMap<String, INode> nodes = new HashMap<>();
     private HashMap<String, IEdge> edge = new HashMap<>();
@@ -29,22 +29,16 @@ public class RedditReader extends Thread {
 
     private String restRequestPath;
 
-    private boolean running = false;
-
 
     public RedditReader(String restRequestPath) {
         this.restRequestPath = restRequestPath;
     }
 
     public void setRestRequestPath(String restRequestPath) {
-        if (!this.running) {
-            this.restRequestPath = restRequestPath;
-        }
+        this.restRequestPath = restRequestPath;
     }
 
-    @Override
-    public void run() {
-        running = true;
+    public HashMap<String, IEdge> run() {
         try {
             String curCode = new Long(System.currentTimeMillis()).toString();
             int round = 0;
@@ -118,7 +112,7 @@ public class RedditReader extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        running = false;
+        return edge;
     }
 
     private void readReplies(INode parent, Iterator<Object> comIt) {
@@ -155,8 +149,9 @@ public class RedditReader extends Thread {
                     readReplies(author, data.getJSONObject("replies").getJSONObject("data").getJSONArray("children").iterator());
                 }
             } else {
-                // TODO eventuell muss bei more element weiter gemacht werden
-                //System.out.println(cur);
+                // TODO: es muss bei more elementen weiter gemacht werden
+                System.out.println("es muss bei more elementen weiter gemacht werden");
+                System.out.println(cur);
                 //System.exit(-1);
             }
         }
