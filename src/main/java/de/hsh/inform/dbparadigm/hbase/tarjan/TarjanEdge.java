@@ -14,7 +14,27 @@ public class TarjanEdge implements IEdge {
 		this.source = source;
 		this.destination = destination;
 	}
-	
+
+	@Override
+	public Long getCreated() {
+		return null;
+	}
+
+	@Override
+	public void setCreated(Long created) {
+
+	}
+
+	@Override
+	public void setTitle(String title) {
+
+	}
+
+	@Override
+	public String getTitle() {
+		return null;
+	}
+
 	@Override
 	public String getIdentifierString() {
 		return id;

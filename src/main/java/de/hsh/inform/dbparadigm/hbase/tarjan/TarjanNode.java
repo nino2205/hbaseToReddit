@@ -23,7 +23,27 @@ public class TarjanNode implements INode {
 		this.link = -2;
 		this.setVisited(false);
 	}
-	  
+
+	@Override
+	public void addIncomingEdges(IEdge edge) {
+
+	}
+
+	@Override
+	public void addOutgoingEdges(IEdge edge) {
+
+	}
+
+	@Override
+	public Long getLastActivity() {
+		return null;
+	}
+
+	@Override
+	public void setLastActivity(Long lastActivity) {
+
+	}
+
 	public void adjustLink (int value) {
 		if (value < this.link) this.link = value;
 	}
