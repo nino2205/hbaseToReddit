@@ -4,6 +4,7 @@
     <groupId>de.hs-hannover.f4.inf.dbparadigm</groupId>
     <artifactId>hbase</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    
     <dependencies>
         <dependency>
             <groupId>com.google.api-client</groupId>
@@ -32,7 +33,14 @@
             <artifactId>gs-core</artifactId>
             <version>1.2</version>
         </dependency>
-
+        
+        <dependency>
+	        <groupId>jdk.tools</groupId>
+	        <artifactId>jdk.tools</artifactId>
+	        <version>${java.version}</version>
+	        <scope>system</scope>
+	        <systemPath>C:/Program Files/Java/jdk1.7.0_79/lib/tools.jar</systemPath>
+	    </dependency>
     </dependencies>
 
     <build>

@@ -2,17 +2,22 @@ package de.hsh.inform.dbparadigm.hbase.tarjan;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
+import de.hsh.inform.dbparadigm.hbase.model.Edge;
 import de.hsh.inform.dbparadigm.hbase.model.IEdge;
+import de.hsh.inform.dbparadigm.hbase.model.INode;
+import de.hsh.inform.dbparadigm.hbase.model.Node;
 
 public class TarjanTest {
 
 	public static void main(String[] args) {
-		LinkedList<TarjanNode> nodes = buildGraph();
+		List<INode> nodes = buildGraph();
 		Algorithm algorithm = new Algorithm(nodes);
-		Collection<Collection<TarjanNode>> result = algorithm.execute();
+		Collection<Collection<INode>> result = algorithm.execute();
 		
 		System.out.println(result.size() == 2);
+		System.out.println(result);
 	}
 	
 	/**
@@ -25,14 +30,14 @@ public class TarjanTest {
 	 *    n2----n3----n4----n6
 	 *    
 	 */
-	private static LinkedList<TarjanNode> buildGraph () {
-		LinkedList<TarjanNode> nodes = new LinkedList<>();
-	    TarjanNode n1 = new TarjanNode("n1");
-	    TarjanNode n2 = new TarjanNode("n2");
-	    TarjanNode n3 = new TarjanNode("n3");
-	    TarjanNode n4 = new TarjanNode("n4");
-	    TarjanNode n5 = new TarjanNode("n5");
-	    TarjanNode n6 = new TarjanNode("n6");
+	private static LinkedList<INode> buildGraph () {
+		LinkedList<INode> nodes = new LinkedList<>();
+	    Node n1 = new Node("n1", "n1", 1L);
+	    Node n2 = new Node("n2", "n2", 2L);
+	    Node n3 = new Node("n3", "n3", 3L);
+	    Node n4 = new Node("n4", "n4", 4L);
+	    Node n5 = new Node("n5", "n5", 5L);
+	    Node n6 = new Node("n6", "n6", 6L);
 
 	    nodes.add(n1);
 	    nodes.add(n2);
@@ -42,17 +47,17 @@ public class TarjanTest {
 	    nodes.add(n6);
 	    
 	    // Interconnected
-	    TarjanEdge e12 = new TarjanEdge("e12", n1, n2);
-	    TarjanEdge e23 = new TarjanEdge("e23", n2, n3);
-	    TarjanEdge e31 = new TarjanEdge("e31", n3, n1);
+	    Edge e12 = new Edge("e12", "e12", 12L, n1, n2);
+	    Edge e23 = new Edge("e23", "e23", 23L, n2, n3);
+	    Edge e31 = new Edge("e31", "e31", 31L, n3, n1);
 	    
 	    // Interconnected
-	    TarjanEdge e45 = new TarjanEdge("e45", n4, n5);
-	    TarjanEdge e56 = new TarjanEdge("e56", n5, n6);
-	    TarjanEdge e64 = new TarjanEdge("e64", n6, n4);
+	    Edge e45 = new Edge("e45", "e45", 45L, n4, n5);
+	    Edge e56 = new Edge("e56", "e56", 56L, n5, n6);
+	    Edge e64 = new Edge("e64", "e64", 64L, n6, n4);
 	    
 	    // Connect components (This should not effect them)
-	    TarjanEdge e34 = new TarjanEdge("34", n3, n4);
+	    Edge e34 = new Edge("e34", "e34", 34L, n3, n4);
 	    
 	    LinkedList<IEdge> n1In = new LinkedList<IEdge>();
 	    LinkedList<IEdge> n2In = new LinkedList<IEdge>();
