@@ -9,6 +9,7 @@ import de.hsh.inform.dbparadigm.hbase.model.INode;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
@@ -51,6 +52,11 @@ public class HBasePool {
 
 	public void load(List<String> node) {
 
+	}
+
+	public void scanAuthor() throws IOException{
+		Scan scan = new Scan();
+		getAuthorTable().getScanner(scan);
 	}
 
 	private Put createEdgePut(IEdge edge){
