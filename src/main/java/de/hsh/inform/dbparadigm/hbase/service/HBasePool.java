@@ -6,10 +6,14 @@ import java.util.List;
 
 import de.hsh.inform.dbparadigm.hbase.model.IEdge;
 import de.hsh.inform.dbparadigm.hbase.model.INode;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.io.compress.Compression;
 import org.apache.hadoop.hbase.util.Bytes;
 
 public class HBasePool {
@@ -46,11 +50,35 @@ public class HBasePool {
 	}
 
 	public void load(INode node) {
+		/*
+        Table table = connection.getTable(TableName.valueOf("myLittleHBaseTable"));
 
+        Get g = new Get(Bytes.toBytes("myLittleRow"));
+        Result r = table.get(g);
+        byte [] value = r.getValue(Bytes.toBytes("myLittleFamily"), Bytes.toBytes("someQualifier"));
+
+        // If we convert the value bytes, we should get back 'Some Value', the
+        // value we inserted at this location.
+        String valueStr = Bytes.toString(value);
+        System.out.println("GET: " + valueStr);
+        */
 	}
 
 	public void load(List<String> node) {
 
+	}
+
+	public void deleteTables() throws IOException{
+		Admin admin = connection.getAdmin();
+		deleteTable(admin, getAuthorTable().getName());
+		deleteTable(admin, getCommentTable().getName());
+	}
+
+	private void deleteTable(Admin admin, TableName tableName) throws IOException{
+		if (admin.tableExists(tableName)) {
+			admin.disableTable(tableName);
+			admin.deleteTable(tableName);
+		}
 	}
 
 	private Put createEdgePut(IEdge edge){
@@ -79,4 +107,29 @@ public class HBasePool {
 		return authorTable;
 	}
 
+	public void createTables() throws IOException {
+		Admin admin = connection.getAdmin();
+
+		HTableDescriptor tableDescriptor = null;
+
+		tableDescriptor = new HTableDescriptor(new HTableDescriptor(TableName.valueOf("comment")));
+		tableDescriptor.addFamily(new HColumnDescriptor("properties").setCompressionType(Compression.Algorithm.SNAPPY));
+		createOrOverwrite(admin, tableDescriptor);
+
+		tableDescriptor = new HTableDescriptor(new HTableDescriptor(TableName.valueOf("author")));
+		tableDescriptor.addFamily(new HColumnDescriptor("properties").setCompressionType(Compression.Algorithm.SNAPPY));
+		createOrOverwrite(admin, tableDescriptor);
+
+		tableDescriptor = new HTableDescriptor(new HTableDescriptor(TableName.valueOf("subreddit")));
+		tableDescriptor.addFamily(new HColumnDescriptor("author").setCompressionType(Compression.Algorithm.SNAPPY));
+		createOrOverwrite(admin, tableDescriptor);
+	}
+
+	private void createOrOverwrite(Admin admin, HTableDescriptor table) throws IOException {
+		if (admin.tableExists(table.getTableName())) {
+			admin.disableTable(table.getTableName());
+			admin.deleteTable(table.getTableName());
+		}
+		admin.createTable(table);
+	}
 }
