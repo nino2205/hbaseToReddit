@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+  <property>
+    <name>hbase.zookeeper.quorum</name>
+    <value>localvm</value>
+    <description>The directory shared by region servers.</description>
+  </property>
+  
+ 
+  
+</configuration>
