@@ -1,19 +1,11 @@
 package de.hsh.inform.dbparadigm.hbase.main;
 
-import de.hsh.inform.dbparadigm.hbase.model.Author;
-import de.hsh.inform.dbparadigm.hbase.model.Comment;
 import de.hsh.inform.dbparadigm.hbase.model.IEdge;
 import de.hsh.inform.dbparadigm.hbase.model.INode;
 import de.hsh.inform.dbparadigm.hbase.service.HBaseConnection;
 import de.hsh.inform.dbparadigm.hbase.service.HBasePool;
 import de.hsh.inform.dbparadigm.hbase.service.RedditReader;
-import de.hsh.inform.dbparadigm.hbase.service.query.*;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.client.HTable;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
@@ -23,10 +15,14 @@ public class RunHBaseQueries {
 
     private static Logger logger = Logger.getGlobal();
 
+    private static HBaseConnection connection = null;
+
+    private static HBasePool pool = null;
+
     public static void main(String[] args) {
-        HBaseConnection connection = null;
         try {
             connection = HBaseConnection.getInstance();
+            pool = new HBasePool(connection.getConnection());
         } catch (IOException e) {
             logger.log(Level.WARNING, "error by open connection to hbase");
             System.exit(-1);
@@ -42,34 +38,49 @@ public class RunHBaseQueries {
             switch (command[0]){
                 case "get":
                     if( command.length == 2 ){
-                        RedditReader reader = new RedditReader(command[1]);
-                        reader.run();
-                        List<IEdge> edges = new ArrayList<IEdge>(reader.edge.values());
-                        List<INode> nodes = new ArrayList<INode>(reader.nodes.values());
-                        HBasePool pool = new HBasePool(connection.getConnection());
-                        try {
-                            pool.saveEdges(edges);
-                            pool.saveNodes(nodes);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else {System.out.println("we need a subreddit");}
+                        get(command[1]);
+                    } else {
+                        System.out.println("we need a subreddit");
+                    }
                     break;
                 case "bridge":
-                    System.out.println("computing bridge");
+                    bridge();
                     break;
                 case "degree":
                     if( command.length == 2 ){
-                        System.out.println("computing degree");
-                    } else {System.out.println("we need a nodeID");}
+                        degree(command[1]);
+                    } else {
+                        System.out.println("we need a nodeID");
+                    }
                     break;
                 case "maxdegree":
-                    System.out.println("computing maxdegree");
+                    maxDegree();
                     break;
                 case "foaf":
                     if( command.length == 2 ){
-                        System.out.println("computing friends of a friend");
-                    } else {System.out.println("we need a nodeID");}
+                        foaf(command[1]);
+                    } else {
+                        System.out.println("we need a nodeID");
+                    }
+                    break;
+                case "delete":
+                    try {
+                        pool.deleteTables();
+                        System.out.println("deleted tables");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "create":
+                    try {
+                        pool.createTables();
+                        System.out.println("created tables");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "test":
+                    test();
                     break;
                 case "exit":
                     break;
@@ -80,8 +91,43 @@ public class RunHBaseQueries {
 
     }
 
+    private static void get(String subreddit){
+        RedditReader reader = new RedditReader(subreddit);
+        reader.run();
+        List<IEdge> edges = new ArrayList<IEdge>(reader.edge.values());
+        List<INode> nodes = new ArrayList<INode>(reader.nodes.values());
+        HBasePool pool = new HBasePool(connection.getConnection());
+        try {
+            pool.saveEdges(edges);
+            pool.saveNodes(nodes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private static void bridge(){
+
+    }
+
+    private static void degree(String nodeId){
+
+    }
+
+    private static void maxDegree(){
+
+    }
+
+    private static void foaf(String nodeId){
+
+    }
+
+    private static void test(){
+
+    }
+
     private static void menu(){
-        System.out.println("Welcome to Reddit2Hbase");
+        System.out.println("Welcome to RedditToHbase");
         System.out.println("-----------------------");
         System.out.println("get <subreddit>         - get the subreddit and added to hbase");
         System.out.println("bridge                  - bridge with tarjan's algorithm");
@@ -89,23 +135,11 @@ public class RunHBaseQueries {
         System.out.println("maxdegree               - MaxDegree");
         System.out.println("foaf <NodeID>           - Friends of a Friend");
         System.out.println("");
+        System.out.println("delete                  - delete all tables");
+        System.out.println("create                  - create all tables");
+        System.out.println("");
         System.out.println("exit");
         System.out.println("-----------------------");
-    }
-
-    private static void start(){
-        ArrayList<IQuery> queries = new ArrayList<>();
-        queries.add(new DegreeCentrality());
-        queries.add(new MaxDegree());
-        queries.add(new FriendsOfAFriend());
-        queries.add(new Bridge());
-
-        long start = 0L;
-        for (IQuery query : queries) {
-            start = new Date().getTime();
-            query.run();
-            System.out.println(query.getName() + " in " + (new Date().getTime()-start) + " ms");
-        }
     }
 
 }
