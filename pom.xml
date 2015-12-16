@@ -27,6 +27,12 @@
             <version>3.2.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.graphstream</groupId>
+            <artifactId>gs-core</artifactId>
+            <version>1.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
