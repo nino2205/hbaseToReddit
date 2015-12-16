@@ -14,15 +14,15 @@ import java.util.Queue;
  * Created by Carsten on 27.10.2015.
  */
 public class RedditTest {
-    private static final int MAX_ROUNDS = 10;
+    private static final int MAX_ROUNDS = 1;
 
     public static void main(String[] args) {
         String curCode = new Long(System.currentTimeMillis()).toString();
-        String restRequestPath = "/r/mobileweb";
+        String restRequestPath = "/r/de";
         if (args.length>0) {
             restRequestPath = args[0];
         }
-        String listingArguments = "?limit=100&after=";
+        String listingArguments = "?limit=1&after=";
         String lastFullname = "";
         try {
             int round = 0;
@@ -39,18 +39,21 @@ public class RedditTest {
                 postIt = posts.iterator();
                 if (!postIt.hasNext())
                     done = true;
-                if (round>MAX_ROUNDS)
+                if (round>=MAX_ROUNDS)
                     done = true;
                 while (postIt.hasNext()) {
                     JSONObject cur = (JSONObject) postIt.next();
                     String docId = cur.getJSONObject("data").getString("id");
                     lastFullname = cur.getJSONObject("data").getString("name");
+                    System.out.println(docId + ": " + cur.getJSONObject("data").getString("title"));
                     idQueue.add(docId);
                 }
             }
-            System.out.println("Done after "+(round-1)+" rounds, collected "+idQueue.size()+ " IDs.");
+            System.out.println("Done after "+(round)+" rounds, collected "+idQueue.size()+ " IDs.");
+
             for (String curId : idQueue) {
                 JSONArray arrResponse = RedditOAuth.getArray(RedditOAuth.OAUTH_API_DOMAIN + "/comments/" + curId, accessToken.get("access_token").toString() );
+                System.out.println(arrResponse);
                 postIt = arrResponse.iterator();
                 while (postIt.hasNext()) {
                     Iterator<Object> comIt = ((JSONObject) postIt.next()).getJSONObject("data").getJSONArray("children").iterator();

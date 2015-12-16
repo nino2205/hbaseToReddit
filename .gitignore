@@ -1,1 +1,6 @@
+/config.properties
+/hbase.iws
+/hbase.ipr
+/hbase.iml
 /target/
+/.idea
