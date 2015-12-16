@@ -5,6 +5,8 @@ import de.hsh.inform.dbparadigm.hbase.model.INode;
 import de.hsh.inform.dbparadigm.hbase.service.HBaseConnection;
 import de.hsh.inform.dbparadigm.hbase.service.HBasePool;
 import de.hsh.inform.dbparadigm.hbase.service.RedditReader;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.implementations.SingleGraph;
 
 import java.io.IOException;
 import java.util.*;
@@ -79,8 +81,8 @@ public class RunHBaseQueries {
                         e.printStackTrace();
                     }
                     break;
-                case "test":
-                    test();
+                case "gui":
+                    gui();
                     break;
                 case "exit":
                     break;
@@ -122,8 +124,37 @@ public class RunHBaseQueries {
 
     }
 
-    private static void test(){
+    private static void gui(){
+        try {
+            HashMap<String, IEdge> edges = pool.scanComment();
 
+            Graph graph = new SingleGraph("Tutorial 1");
+            graph.addAttribute("ui.stylesheet",
+                    "node { z-index: 2; size-mode: fit; shape: rounded-box; stroke-mode: plain; padding: 3px, 2px; text-alignment: center; text-size: 12px;}");
+
+            for(Map.Entry<String, IEdge> entry : edges.entrySet()){
+                if( graph.getNode( entry.getValue().getSource().getIdentifierString() ) == null ) {
+                    graph.addNode(entry.getValue().getSource().getIdentifierString())
+                            .addAttribute("label", entry.getValue().getSource().getIdentifierString());
+                }
+
+                if( graph.getNode( entry.getValue().getDestination().getIdentifierString() ) == null ) {
+                    graph.addNode(entry.getValue().getDestination().getIdentifierString())
+                            .addAttribute("label", entry.getValue().getDestination().getIdentifierString());
+                }
+
+                graph.addEdge(
+                        entry.getValue().getSource().getIdentifierString()+entry.getValue().getDestination().getIdentifierString(),
+                        entry.getValue().getSource().getIdentifierString(),
+                        entry.getValue().getDestination().getIdentifierString(),
+                        true
+                        );
+            }
+
+            graph.display();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void menu(){
