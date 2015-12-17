@@ -5,6 +5,7 @@ import de.hsh.inform.dbparadigm.hbase.model.INode;
 import de.hsh.inform.dbparadigm.hbase.service.HBaseConnection;
 import de.hsh.inform.dbparadigm.hbase.service.HBasePool;
 import de.hsh.inform.dbparadigm.hbase.service.RedditReader;
+import de.hsh.inform.dbparadigm.hbase.tarjan.Algorithm;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 
@@ -21,7 +22,7 @@ public class RunHBaseQueries {
 
     private static HBasePool pool = null;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException{
         try {
             connection = HBaseConnection.getInstance();
             pool = new HBasePool(connection.getConnection());
@@ -108,8 +109,24 @@ public class RunHBaseQueries {
 
     }
 
-    private static void bridge(){
+    private static void bridge() throws IOException{
+        HashMap<String, IEdge> comments = pool.scanComment();
+        HashMap<String, INode> nodes = new HashMap<>();
 
+        for (String key: comments.keySet()) {
+            if(!nodes.containsKey( comments.get(key).getSource().getIdentifierString() )){
+                nodes.put( comments.get(key).getSource().getIdentifierString(), comments.get(key).getSource() );
+            }
+
+            if(!nodes.containsKey( comments.get(key).getDestination().getIdentifierString() )){
+                nodes.put( comments.get(key).getDestination().getIdentifierString(), comments.get(key).getDestination() );
+            }
+        }
+
+        Algorithm tarjan = new Algorithm((List<INode>) nodes.values());
+
+
+        tarjan.execute();
     }
 
     private static void degree(String nodeId){
