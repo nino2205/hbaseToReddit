@@ -6,6 +6,11 @@ import de.hsh.inform.dbparadigm.hbase.service.HBaseConnection;
 import de.hsh.inform.dbparadigm.hbase.service.HBasePool;
 import de.hsh.inform.dbparadigm.hbase.service.RedditReader;
 import de.hsh.inform.dbparadigm.hbase.tarjan.Algorithm;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.CompareFilter;
+import org.apache.hadoop.hbase.filter.RegexStringComparator;
+import org.apache.hadoop.hbase.filter.ValueFilter;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 
@@ -125,12 +130,64 @@ public class RunHBaseQueries {
 
         Algorithm tarjan = new Algorithm((List<INode>) nodes.values());
 
+        final long timeStart = System.currentTimeMillis();
+        List<List<INode>> comp = tarjan.execute();
+        final long timeEnd = System.currentTimeMillis();
 
-        tarjan.execute();
+        System.out.println("components: " + comp.size() + " in " + (timeEnd - timeStart) + " ms");
+
+        Graph graph = new SingleGraph("Tutorial 1");
+        graph.addAttribute("ui.stylesheet",
+                "node { z-index: 2; size-mode: fit; shape: rounded-box; stroke-mode: plain; padding: 3px, 2px; text-alignment: center; text-size: 12px;}");
+
+        for (List<INode> iNodes : comp) {
+            for (INode iNode : iNodes) {
+                for (IEdge iEdge : iNode.getIncomingEdges()) {
+                    bridgeGraph(graph, iEdge);
+                }
+                for (IEdge iEdge : iNode.getOutgoingEdges()) {
+                    bridgeGraph(graph, iEdge);
+                }
+            }
+        }
     }
 
-    private static void degree(String nodeId){
+    private static void bridgeGraph(Graph graph, IEdge iEdge){
+        if( graph.getNode( iEdge.getSource().getIdentifierString() ) == null ) {
+            graph.addNode(iEdge.getSource().getIdentifierString())
+                    .addAttribute("label", iEdge.getSource().getIdentifierString());
+        }
 
+        if( graph.getNode( iEdge.getDestination().getIdentifierString() ) == null ) {
+            graph.addNode( iEdge.getDestination().getIdentifierString())
+                    .addAttribute("label", iEdge.getDestination().getIdentifierString());
+        }
+
+        graph.addEdge(
+                iEdge.getSource().getIdentifierString()+iEdge.getDestination().getIdentifierString(),
+                iEdge.getSource().getIdentifierString(),
+                iEdge.getDestination().getIdentifierString(),
+                true
+        );
+    }
+
+    private static void degree(String nodeId) throws IOException{
+        ValueFilter vfOut = new ValueFilter(
+                CompareFilter.CompareOp.EQUAL,
+                new RegexStringComparator(nodeId + "//|*")
+        );
+        ValueFilter vfIn = new ValueFilter(
+                CompareFilter.CompareOp.EQUAL,
+                new RegexStringComparator(nodeId + "//|*")
+        );
+
+        Scan scan = new Scan();
+
+        scan.setFilter(vfOut);
+        ResultScanner vfInresults = pool.getCommentTable().getScanner(scan);
+
+        scan.setFilter(vfIn);
+        ResultScanner vfOutresults = pool.getCommentTable().getScanner(scan);
     }
 
     private static void maxDegree(){

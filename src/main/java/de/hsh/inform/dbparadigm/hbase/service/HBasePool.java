@@ -121,14 +121,14 @@ public class HBasePool {
 		return p;
 	}
 
-	private Table getCommentTable() throws IOException{
+	public Table getCommentTable() throws IOException{
 		if( commentTable == null ){
 			commentTable = connection.getTable(TableName.valueOf("comment"));
 		}
 		return commentTable;
 	}
 
-	private Table getAuthorTable() throws IOException{
+	public Table getAuthorTable() throws IOException{
 		if( authorTable == null ){
 			authorTable = connection.getTable(TableName.valueOf("author"));
 		}
