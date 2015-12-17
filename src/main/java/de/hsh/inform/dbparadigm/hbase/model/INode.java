@@ -13,4 +13,5 @@ public interface INode {
 	public void addOutgoingEdges(IEdge edge);
 	public Long getLastActivity();
 	public void setLastActivity(Long lastActivity);
+	public List<INode> getNeighbours ();
 }

@@ -1,12 +1,10 @@
 package de.hsh.inform.dbparadigm.hbase.tarjan;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
 
-import de.hsh.inform.dbparadigm.hbase.model.IEdge;
 import de.hsh.inform.dbparadigm.hbase.model.INode;
 
 public class Algorithm {
@@ -18,7 +16,7 @@ public class Algorithm {
 	private final Stack<INode> stack;
 	
 	// The strongly connected components (SCC).
-	private Collection<Collection<INode>> components;
+	private List<List<INode>> components;
 	
 	// Used to assign unique incremental indicies. 
 	private int pointer;
@@ -28,6 +26,9 @@ public class Algorithm {
 	private final HashMap<INode, Integer> links;
 	private final HashMap<INode, Boolean> visited;
 	
+	/**
+	 * Constuctor.
+	 */
 	public Algorithm (List<INode> nodes) {
 		this.nodes = nodes;
 		this.stack = new Stack<>();
@@ -46,10 +47,10 @@ public class Algorithm {
 	}
 	
 	/**
-	 * Traverses all unvisited TajanNodes and returns the strong 
-	 * components of this.nodes as a Collection of TarjanNode Collections.
+	 * Traverses all unvisited INodes of nodes and returns the strong 
+	 * components of this.nodes as a Collection of INode Collections.
 	 */
-	public Collection<Collection<INode>> execute () {
+	public List<List<INode>> execute () {
 		int size = this.nodes.size();
 		this.pointer = 0;
 		this.components = new Vector<>();
@@ -62,8 +63,8 @@ public class Algorithm {
 	}
 	
 	/**
-	 * Visits the TarjanNode node and it's unvisited neighbors. If the
-	 * node's link equals it's index, a SCC is found.
+	 * Visits the INode node and it's unvisited neighbors. If the
+	 * link of the node equals it's index, a SCC is found.
 	 */
 	private void visit (INode node) {
 		this.ids.put(node, pointer);
@@ -72,7 +73,7 @@ public class Algorithm {
 		this.stack.push(node);
 	    this.pointer += 1;
 	    
-	    for (INode neighbour : this.getNeighbours(node)) {
+	    for (INode neighbour : node.getNeighbours()) {
 	    	if (nodes.contains(neighbour) && !this.visited.get(neighbour)) {
 	    		this.visit(neighbour);
 	    		this.adjustLink(node, this.links.get(neighbour));
@@ -85,6 +86,10 @@ public class Algorithm {
 	    }
 	}
 	
+	/**
+	 * Sets the link of the INode node to value, if it's smaller
+	 * than the current link value.
+	 */
 	private void adjustLink (INode node, Integer value) {
 		if (value < this.links.get(node)) {
 			this.links.put(node, value);
@@ -92,8 +97,8 @@ public class Algorithm {
 	}
 	
 	/**
-	 * Creates a Component (Vector) from all TarjanNodes on the stack 
-	 * until the TarjanNode node is reached (inclusively).
+	 * Creates a Component (Vector) from all INodes on the stack 
+	 * until the INode node is reached (inclusively).
 	 */
 	private Vector<INode> createComponent (INode node) {
 		Vector<INode> component = new Vector<INode>();
@@ -104,20 +109,6 @@ public class Algorithm {
 			if (node.equals(current)) break;
 		}
 		return component;
-	}
-	
-	/**
-	 * Returns all neighbors of the INode in the tNode TarjanNode.
-	 */
-	private Vector<INode> getNeighbours (INode node) {
-		Vector<INode> neighbors = new Vector<>();
-		for (IEdge edge : node.getOutgoingEdges()) {
-			neighbors.add(edge.getDestination());
-		}
-		for (IEdge edge : node.getIncomingEdges()) {
-			neighbors.add(edge.getDestination());
-		}
-		return neighbors;
 	}
 	
 }

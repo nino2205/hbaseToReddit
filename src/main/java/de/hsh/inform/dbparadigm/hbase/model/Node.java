@@ -85,6 +85,18 @@ public class Node implements INode {
         outgoingEdges.clear();
         outgoingEdges.addAll(edges);
     }
+    
+    @Override
+	public List<INode> getNeighbours () {
+    	ArrayList<INode> neighbors = new ArrayList<>();
+		for (IEdge edge : getOutgoingEdges()) {
+			neighbors.add(edge.getDestination());
+		}
+		for (IEdge edge : getIncomingEdges()) {
+			neighbors.add(edge.getDestination());
+		}
+		return neighbors;
+	}
 
     @Override
     public String toString() {

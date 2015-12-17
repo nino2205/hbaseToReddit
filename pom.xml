@@ -11,7 +11,7 @@
 			<artifactId>jdk.tools</artifactId>
 			<version>${java.version}</version>
 			<scope>system</scope>
-			<systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
+			<systemPath>C:/Program Files/Java/jdk1.7.0_79/lib/tools.jar</systemPath>
 		</dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>

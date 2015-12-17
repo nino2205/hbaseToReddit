@@ -1,6 +1,5 @@
 package de.hsh.inform.dbparadigm.hbase.tarjan;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,7 +13,7 @@ public class TarjanTest {
 	public static void main(String[] args) {
 		List<INode> nodes = buildGraph();
 		Algorithm algorithm = new Algorithm(nodes);
-		Collection<Collection<INode>> result = algorithm.execute();
+		List<List<INode>> result = algorithm.execute();
 		
 		System.out.println(result.size() == 2);
 		System.out.println(result);
