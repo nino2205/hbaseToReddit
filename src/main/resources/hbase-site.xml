@@ -3,7 +3,7 @@
 <configuration>
   <property>
     <name>hbase.zookeeper.quorum</name>
-    <value>localvm</value>
+    <value>quickstart.cloudera</value>
     <description>The directory shared by region servers.</description>
   </property>
   
