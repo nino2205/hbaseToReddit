@@ -6,8 +6,10 @@ import de.hsh.inform.dbparadigm.hbase.service.HBaseConnection;
 import de.hsh.inform.dbparadigm.hbase.service.HBasePool;
 import de.hsh.inform.dbparadigm.hbase.service.RedditReader;
 import de.hsh.inform.dbparadigm.hbase.tarjan.Algorithm;
+import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.client.coprocessor.AggregationClient;
 import org.apache.hadoop.hbase.filter.CompareFilter;
 import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.ValueFilter;
@@ -174,16 +176,36 @@ public class RunHBaseQueries {
 	}
 
 	private static void degree(String nodeId) throws IOException {
-		ValueFilter vfOut = new ValueFilter(CompareFilter.CompareOp.EQUAL, new RegexStringComparator(nodeId + "//|*"));
-		ValueFilter vfIn = new ValueFilter(CompareFilter.CompareOp.EQUAL, new RegexStringComparator(nodeId + "//|*"));
+		ValueFilter vfOut = new ValueFilter(CompareFilter.CompareOp.EQUAL, new RegexStringComparator(nodeId + "//|.*"));
+		ValueFilter vfIn = new ValueFilter(CompareFilter.CompareOp.EQUAL, new RegexStringComparator(".*//|" + nodeId));
 
 		Scan scan = new Scan();
 
-		scan.setFilter(vfOut);
-		ResultScanner vfInresults = pool.getCommentTable().getScanner(scan);
+		final long timeStart = System.currentTimeMillis();
 
 		scan.setFilter(vfIn);
+		ResultScanner vfInresults = pool.getCommentTable().getScanner(scan);
+		scan.setFilter(vfOut);
 		ResultScanner vfOutresults = pool.getCommentTable().getScanner(scan);
+		int incommingCounter = 0;
+		int outgoingCounter = 0;
+
+		System.out.println("[!!! NON-PERFORMANCE !!!]");
+		System.out.println("require MapReduce methode");
+		System.out.println("Incomming edges");
+		for (Result result = vfInresults.next(); result != null; result = vfInresults.next() ){
+			incommingCounter++;
+		}
+
+
+		System.out.print("Outgoing edges");
+		for (Result result = vfOutresults.next(); result != null; result = vfOutresults.next() ){
+			outgoingCounter++;
+		}
+
+		final long timeEnd = System.currentTimeMillis();
+
+		System.out.println("Incomming edges: " + incommingCounter + "\nOutgoing edges: " + outgoingCounter + "\nin " + (timeEnd - timeStart) + " ms");
 	}
 
 	private static void maxDegree() {
